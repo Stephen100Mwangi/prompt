@@ -1,25 +1,28 @@
 import Prompt from "@models/prompt";
 import { connectToDB } from "@utils/database";
+import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async ({ params }: { params: { id: string } }) =>{
+interface RouteContext {
+    params: { id: string };
+}
+
+// First argument should be a request object
+export const GET = async (request: NextRequest, context: RouteContext) =>{
     try {
-        await connectToDB()
+        await connectToDB();
 
         const prompts = await Prompt.find({
-            creator: params.id
+            creator: context.params.id
         }).populate('creator')
 
         if (!prompts || prompts.length === 0) {
-            return new Response(JSON.stringify({ error: "No prompts found" }), { status: 404 });
+            return NextResponse.json({ error: "No prompts found" }, { status: 404 });
         }
         
-        return new Response (JSON.stringify(prompts),{
-            status: 200,
-            headers: { "Content-Type": "application/json"}
-        })
+        return NextResponse.json(prompts, { status: 200 });
     } catch (error) {
         console.error("Error fetching prompts", error);        ;
-        return new Response(JSON.stringify({message:"Error fetching prompts"}),{status:500, headers: { "Content-Type":"application/json"}})
+        return NextResponse.json({ message: "Error fetching prompts" }, { status: 500 });
     }
 
 }
