@@ -5,8 +5,9 @@ import PromptCard from "./PromptCard";
 interface Prompt {
   _id: string;
   prompt: string;
-  tags?: string[];
+  tag: string;
   creator: {
+    _id: string;
     image: string;
     username: string;
     email: string;
@@ -53,15 +54,49 @@ const Feed = () => {
   // Fetch Data
   useEffect(() => {
     const fetchPrompts = async () => {
-      const response = await fetch("/api/prompt");
-      const data = await response.json();
-
-      setPrompts(data);
-      setFilteredPrompts(data);
+      try {
+        const response = await fetch("/api/prompt");
+        const data = await response.json();
+    
+        if (Array.isArray(data)) {
+          setPrompts(
+            data.map((prompt) => ({
+              ...prompt,
+              creator: {
+                _id: prompt.creator?._id || "unknown-id",
+                image: prompt.creator?.image || "/default-image.png",
+                username: prompt.creator?.username || "Unknown User",
+                email: prompt.creator?.email || "no-email@example.com",
+              },
+            }))
+          );
+          setFilteredPrompts(
+            data.map((prompt) => ({
+              ...prompt,
+              creator: {
+                _id: prompt.creator?._id || "unknown-id",
+                image: prompt.creator?.image || "/default-image.png",
+                username: prompt.creator?.username || "Unknown User",
+                email: prompt.creator?.email || "no-email@example.com",
+              },
+            }))
+          );
+        } else {
+          console.error("API did not return an array:", data);
+          setPrompts([]);
+          setFilteredPrompts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching prompts:", error);
+        setPrompts([]);
+        setFilteredPrompts([]);
+      }
     };
-
+    
+  
     fetchPrompts();
   }, []);
+  
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();

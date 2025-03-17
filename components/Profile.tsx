@@ -4,7 +4,7 @@ import PromptCard from "./PromptCard";
 interface Prompt {
   _id: string;
   prompt: string;
-  tags?: string[];
+  tag: string;
   creator: {
     image: string;
     username: string;

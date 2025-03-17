@@ -8,11 +8,12 @@ import { usePathname, useRouter } from "next/navigation";
 interface Prompt {
   _id: string;
   prompt: string;
-  tags?: string[];
+  tag: string;
   creator: {
     image: string;
     username: string;
     email: string;
+    _id: string;
   };
 }
 
@@ -38,6 +39,10 @@ const PromptCard: React.FC<PromptCardProps> = ({
       setCopied(false);
     }, 2000);
   };
+
+  const { data: session }  = useSession();
+  const pathName = usePathname();
+  const router = useRouter();
 
   return (
     <div className="prompt_card">
@@ -70,17 +75,20 @@ const PromptCard: React.FC<PromptCardProps> = ({
         </div>
       </div>
       <p className="my-4 font-satoshi text-sm font-light text-grey-700">{prompt.prompt}</p>
+      <p>{prompt.tag}</p>
 
-      {/* Tags  */}
-      {prompt.tags?.map((tag, index) => (
-        <p
-          key={index}
-          onClick={() => handleTagClick && handleTagClick(tag)}
-          className="font-inter text-sm blue_gradient cursor-pointer"
-        >
-          {tag}
-        </p>
-      ))}
+      {/* Check if we have a user logged in */}
+      {
+        session?.user.id === prompt.creator._id && pathName === '/profile' && (
+          <div className="mt-5 flex-center gap-4 border-t border-grey-100 pt-3">
+            <p className="green_gradient cursor-pointer font-inter text-sm" onClick={handleEdit}>Edit</p>
+            <p className="orange_gradient cursor-pointer font-inter text-sm" onClick={handleDelete}>Delete</p>
+          </div>
+        )
+      }
+
+
+
     </div>
   );
 };

@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { signIn, signOut, getProviders, useSession, ClientSafeProvider } from "next-auth/react";
+import { signIn, getProviders, useSession, ClientSafeProvider } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 
 const Nav = () => {

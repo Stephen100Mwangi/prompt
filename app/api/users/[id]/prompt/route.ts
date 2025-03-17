@@ -1,11 +1,14 @@
 import { connectToDB } from "@utils/database";
 import Prompt from "@models/prompt";
-
-export const GET = async () => {
+import { NextRequest } from "@node_modules/next/server";
+interface Param {
+    id: string
+}
+export const GET = async (request:NextRequest, { params }) => {
     try {
         // Connect to DB
         await connectToDB()
-        const prompts = await Prompt.find({}).populate({path: 'creator', select: 'username'});
+        const prompts = await Prompt.find({creator:params.id}).populate({path: 'creator', select: 'username'});
 
         return new Response(JSON.stringify(prompts),{ status: 200 })
     } catch (error) {
